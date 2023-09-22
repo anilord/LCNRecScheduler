@@ -1,0 +1,35 @@
+﻿@model LCNRecScheduler.Models.ViewModels.ConfirmUserViewModel
+
+<h2>Confirm Users</h2>
+
+<!-- List of unconfirmed users -->
+<ul class="list-group">
+    @foreach (var user in Model.UnconfirmedUsers)
+    {
+        <li class="list-group-item">
+            <a href="#userDetails-@user.Id" data-toggle="collapse">
+                @user.UserFullName (@user.UserEmail)
+            </a>
+            <div id="userDetails-@user.Id" class="collapse">
+                <hr />
+                <h4>User Details</h4>
+                <dl class="dl-horizontal">
+                    <dt>Email:</dt>
+                    <dd>@user.UserEmail</dd>
+                    <dt>Full Name:</dt>
+                    <dd>@user.UserFullName</dd>
+                    <!-- Add more user details here as needed -->
+                </dl>
+                <form asp-action="ConfirmUser" method="post">
+                    <input type="hidden" asp-for="UserId" value="@user.Id" />
+                    <button type="submit" class="btn btn-success">Confirm User</button>
+                </form>
+            </div>
+        </li>
+    }
+</ul>
+
+<!-- Back to Admin Panel button -->
+<div class="form-group">
+    <a asp-controller="Admin" asp-action="Index" class="btn btn-default">Back to Admin Panel</a>
+</div>
