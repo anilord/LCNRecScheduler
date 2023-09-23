@@ -120,6 +120,35 @@ namespace LCNRecScheduler.Controllers
             return View();
         }
 
+        //[HttpPost]
+        //[AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        //{
+        //    ViewData["ReturnUrl"] = returnUrl;
+        //    if (ModelState.IsValid)
+        //    {
+        //        var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+
+        //        if (result.Succeeded)
+        //        {
+        //            return RedirectToLocal(returnUrl);
+        //        }
+
+        //        if (result.IsLockedOut)
+        //        {
+        //            return View("Lockout");
+        //        }
+        //        else
+        //        {
+        //            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+        //            return View(model);
+        //        }
+        //    }
+
+        //    return View(model);
+        //}
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -128,26 +157,39 @@ namespace LCNRecScheduler.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                // Find the user by email
+                var user = await _userManager.FindByEmailAsync(model.Email);
 
-                if (result.Succeeded)
+                if (user != null && user.IsApproved)
                 {
-                    return RedirectToLocal(returnUrl);
-                }
+                    
+                    var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToLocal(returnUrl);
+                    }
 
-                if (result.IsLockedOut)
-                {
-                    return View("Lockout");
+                    if (result.IsLockedOut)
+                    {
+                        return View("Lockout");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                        return View(model);
+                    }
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Your account has not been approved yet.");
                     return View(model);
                 }
             }
 
             return View(model);
         }
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -168,6 +210,50 @@ namespace LCNRecScheduler.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
+
+
+        // Display the password change form
+        [HttpGet]
+        public IActionResult ChangePassword(string userId)
+        {
+            var model = new ChangePasswordViewModel { UserId = userId };
+            return View(model);
+        }
+
+        // Handle the password change request
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByIdAsync(model.UserId);
+
+                if (user != null)
+                {
+                    var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+
+                    if (changePasswordResult.Succeeded)
+                    {
+                        // You can add a success message here if needed.
+                        return RedirectToAction("Index", "Home"); // Redirect to a success page.
+                    }
+
+                    foreach (var error in changePasswordResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "User not found.");
+                }
+            }
+
+            return View(model);
+        }
+
+
     }
 }
 

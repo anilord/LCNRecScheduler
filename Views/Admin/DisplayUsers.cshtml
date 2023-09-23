@@ -20,11 +20,11 @@
                     <dd>@user.UserFullName</dd>
                     <!-- Add more user details here as needed -->
                 </dl>
-                <form asp-action="ConfirmBeforeConfirmUser" method="post">
-                    <input type="hidden" asp-for="UserId" value="@user.Id" />
-                    <input type="hidden" name="UserFullName" value="@user.UserFullName" />
-                    <button type="submit" class="btn btn-success">Confirm User</button>
-                </form>
+                @*<form asp-action="ConfirmBeforeConfirmUser" method="post">*@
+                    @*<input type="hidden" asp-for="UserId" value="@user.Id" />
+                    <input type="hidden" name="UserFullName" value="@user.UserFullName" />*@
+                <a class="btn btn-success" asp-action="ChangeUserPassword" asp-controller="Admin" asp-route-userId="@user.Id" asp-route-Fullname="@user.UserFullName">Change Password</a>
+                @*</form>*@
             </div>
         </li>
     }

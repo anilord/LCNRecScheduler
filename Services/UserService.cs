@@ -29,5 +29,15 @@ namespace LCNRecScheduler.Services
 
             return unconfirmedUsers;
         }
+
+
+        public List<ApplicationUser> GetConfirmedUsers()
+        {
+            var ConfirmedUsers = _context.Users
+                .Where(user => user.IsApproved) // Adjust this condition based on your schema
+                .ToList();
+
+            return ConfirmedUsers;
+        }
     }
 }

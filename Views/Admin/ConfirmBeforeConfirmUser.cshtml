@@ -1,0 +1,10 @@
+﻿<div class="card">
+    <div class="card-header">
+        @ViewBag.fullname
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">Confirm Login Approval</h5>
+        <p class="card-text">Are you sure you want to approve login status for @ViewBag.fullname</p>
+        <a asp-action="DoConfirm" asp-route-id="@ViewBag.id" class="btn btn-primary">Yes</a> &nbsp; &nbsp; <a asp-action="ConfirmUser" class="btn btn-danger">No</a>
+    </div>
+</div>
